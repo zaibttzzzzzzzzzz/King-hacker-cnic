@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KING HACKER</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 2px solid #0f0;
+            padding: 20px;
+            position: relative;
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 0, 0.3);
+            animation: scan 4s linear infinite;
+        }
+
+        input, button {
+            background: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        button {
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #0f0;
+            color: #000;
+        }
+
+        #result {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .cnic-img {
+            max-width: 100%;
+            border: 2px solid #0f0;
+            margin: 10px 0;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        .matrix-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Matrix effect canvas -->
+    <canvas class="matrix-effect" id="matrix"></canvas>
+
+    <div class="container">
+        <div class="scan-line"></div>
+        <h1>KING HACKER</h1>
+        <h3>CNIC Information System v1.0</h3>
+        
+        <input type="text" id="mobileInput" placeholder="Enter Mobile Number..." pattern="[0-9]{11}">
+        <button onclick="hack()">INITIATE HACK</button>
+
+        <div id="result">
+            <img class="cnic-img" id="cnicImage" src="" alt="CNIC">
+            <pre id="details"></pre>
+            <h2 id="enteredNumber"></h2>
+        </div>
+    </div>
+
+    <audio id="hackerSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+
+    <script>
+        // Mock data - Replace with your actual image URLs and data
+        const data = {
+            '03154826087': {
+                image: 'https://files.catbox.moe/f3jft4.jpg',
+                details: `Name: John Doe
+Father: James Doe
+DOB: 01-01-1990
+Address: Hacker Street, Cyber City`
+            },
+            // Add more entries as needed
+        };
+
+        function hack() {
+            const num = document.getElementById('mobileInput').value;
+            const result = data[num] || null;
+            
+            // Play hacker sound
+            document.getElementById('hackerSound').play();
+            
+            // Show loading effect
+            document.body.style.cursor = 'wait';
+            
+            setTimeout(() => {
+                if(result) {
+                    document.getElementById('cnicImage').src = result.image;
+                    document.getElementById('details').textContent = result.details;
+                    document.getElementById('enteredNumber').textContent = `Target Number: ${num}`;
+                    document.getElementById('result').style.display = 'block';
+                } else {
+                    alert('Target not found in database!');
+                }
+                document.body.style.cursor = 'default';
+            }, 2000);
+        }
+
+        // Matrix effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+        const drops = Array(Math.floor(canvas.width/10)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#0F0';
+            ctx.font = '15px monospace';
+
+            drops.forEach((drop, i) => {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i*10, drop*10);
+                
+                if(drop*10 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+
+        setInterval(drawMatrix, 50);
+    </script>
+</body>
+</html>
